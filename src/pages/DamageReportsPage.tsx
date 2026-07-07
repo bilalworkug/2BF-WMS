@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase, type DamageReport } from '../api/client';
-import { Loader2, RefreshCw, Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, RefreshCw, Plus } from 'lucide-react';
 
 export function DamageReportsPage() {
   const [reports, setReports] = useState<DamageReport[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submittingId, setSubmittingId] = useState<string | null>(null);
   
   // Submit new report state
   const [batchCode, setBatchCode] = useState('');
@@ -58,7 +57,7 @@ export function DamageReportsPage() {
         body: JSON.stringify({
           batch_code: batchCode.trim(),
           quantity,
-          reason,
+          reason: reason.trim(),
           source
         })
       });
@@ -83,7 +82,7 @@ export function DamageReportsPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </div>
     );
   }
@@ -93,7 +92,7 @@ export function DamageReportsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Damage & Quarantine Reports</h1>
-          <p className="text-sm text-slate-500">Record stock damaged on shelf or customer returns and manage quarantines.</p>
+          <p className="text-sm text-slate-500">Record stock damaged on shelf or customer returns.</p>
         </div>
         <button onClick={fetchReports} className="p-2.5 text-slate-500 hover:text-slate-700 bg-white border border-slate-200 rounded-xl shadow-sm">
           <RefreshCw className="h-4.5 w-4.5" />
@@ -108,14 +107,13 @@ export function DamageReportsPage() {
           
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">Batch Barcode</label>
+              <label className="block text-xs font-semibold text-slate-500 mb-1">Batch Code</label>
               <input
                 type="text"
                 value={batchCode}
                 onChange={e => setBatchCode(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-brand-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-emerald-500 focus:outline-none"
                 placeholder="Scan or enter code..."
-                required
               />
             </div>
 
@@ -125,9 +123,8 @@ export function DamageReportsPage() {
                 type="number"
                 value={quantity || ''}
                 onChange={e => setQuantity(parseInt(e.target.value) || 0)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-brand-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-emerald-500 focus:outline-none"
                 placeholder="e.g. 50"
-                required
               />
             </div>
 
@@ -136,7 +133,7 @@ export function DamageReportsPage() {
               <select
                 value={source}
                 onChange={e => setSource(e.target.value as any)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-brand-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-emerald-500 focus:outline-none"
               >
                 <option value="warehouse_discovered">Warehouse Discovered</option>
                 <option value="customer_returned">Customer Returned</option>
@@ -148,7 +145,7 @@ export function DamageReportsPage() {
               <textarea
                 value={reason}
                 onChange={e => setReason(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs transition focus:border-brand-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs transition focus:border-emerald-500 focus:outline-none"
                 rows={2}
                 placeholder="Water leak, box crushed..."
                 required
@@ -170,7 +167,7 @@ export function DamageReportsPage() {
             <button
               type="submit"
               disabled={submittingForm}
-              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-700 transition"
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 transition"
             >
               {submittingForm ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
               Submit Report

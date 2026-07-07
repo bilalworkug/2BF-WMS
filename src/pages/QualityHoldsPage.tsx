@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase, type QualityHold } from '../api/client';
-import { Loader2, RefreshCw, Plus, Lock, Unlock, AlertCircle } from 'lucide-react';
+import { Loader2, RefreshCw, Plus, Lock, Unlock } from 'lucide-react';
 
 export function QualityHoldsPage() {
   const [holds, setHolds] = useState<QualityHold[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
-  // Placed hold inputs
   const [batchCode, setBatchCode] = useState('');
   const [reason, setReason] = useState('');
   const [statusAction, setStatusAction] = useState<'active' | 'released'>('active');
@@ -36,8 +35,12 @@ export function QualityHoldsPage() {
 
   const handleHoldSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!batchCode.trim() || !reason.trim()) {
-      setErrorMsg('All fields are required.');
+    if (!batchCode.trim()) {
+      setErrorMsg('Batch code is required.');
+      return;
+    }
+    if (!reason.trim()) {
+      setErrorMsg('Reason is required.');
       return;
     }
 
@@ -55,7 +58,7 @@ export function QualityHoldsPage() {
         },
         body: JSON.stringify({
           batch_code: batchCode.trim(),
-          reason,
+          reason: reason.trim(),
           status: statusAction
         })
       });
@@ -79,7 +82,7 @@ export function QualityHoldsPage() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </div>
     );
   }
@@ -109,9 +112,8 @@ export function QualityHoldsPage() {
                 type="text"
                 value={batchCode}
                 onChange={e => setBatchCode(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-brand-500 focus:outline-none"
-                placeholder="Scan or enter code..."
-                required
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-emerald-500 focus:outline-none"
+                placeholder="Scan or enter batch code..."
               />
             </div>
 
@@ -120,7 +122,7 @@ export function QualityHoldsPage() {
               <select
                 value={statusAction}
                 onChange={e => setStatusAction(e.target.value as any)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-brand-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs transition focus:border-emerald-500 focus:outline-none"
               >
                 <option value="active">⚠️ Lock Batch (Place Hold)</option>
                 <option value="released">✅ Release Batch (Free Stock)</option>
@@ -132,7 +134,7 @@ export function QualityHoldsPage() {
               <textarea
                 value={reason}
                 onChange={e => setReason(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs transition focus:border-brand-500 focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 px-3.5 py-2 text-xs transition focus:border-emerald-500 focus:outline-none"
                 rows={2}
                 placeholder="Microbial check pending, packaging defective..."
                 required
@@ -154,7 +156,7 @@ export function QualityHoldsPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-brand-700 transition"
+              className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-emerald-700 transition"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
               Apply Hold Action

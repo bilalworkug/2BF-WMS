@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, type ReactNode } from '
 
 export type UserRole = 'super_admin' | 'report_viewer' | 'production' | 'warehouse_receiving' | 'warehouse_withdrawal' | 'sales' | 'stock_manager' | 'qa_officer';
 
-export type PageKey = 'dashboard' | 'customers' | 'products' | 'batches' | 'receiving' | 'discrepancies' | 'picking' | 'damage' | 'holds' | 'reports' | 'users' | 'audit_log';
+export type PageKey = 'dashboard' | 'customers' | 'products' | 'batches' | 'receiving' | 'discrepancies' | 'picking' | 'damage' | 'holds' | 'reports' | 'users' | 'audit_log' | 'checker' | 'customer_profile' | 'order_details';
 
 export type Permissions = {
   pages: PageKey[];
@@ -21,7 +21,7 @@ export type Permissions = {
 
 const ROLE_PERMISSIONS: Record<UserRole, Permissions> = {
   super_admin: {
-    pages: ['dashboard', 'customers', 'products', 'batches', 'receiving', 'discrepancies', 'picking', 'damage', 'holds', 'reports', 'users', 'audit_log'],
+    pages: ['dashboard', 'customers', 'products', 'batches', 'receiving', 'discrepancies', 'picking', 'damage', 'holds', 'reports', 'users', 'audit_log', 'customer_profile', 'order_details'],
     canDelete: true,
     canManageUsers: true,
     canChangeOrderStatus: true,

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Product, type Batch } from '../api/client';
-import { Loader2, Printer, AlertCircle, Plus, Calendar, ShieldAlert } from 'lucide-react';
+import { Loader2, Printer, AlertCircle, Plus, ShieldAlert } from 'lucide-react';
 
 export function LogProduction() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -15,8 +15,6 @@ export function LogProduction() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  
-  // Simulated printer state
   const [printedLabel, setPrintedLabel] = useState<{ code: string; name: string; expiry: string } | null>(null);
 
   useEffect(() => {
@@ -53,7 +51,6 @@ export function LogProduction() {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
-    setPrintedLabel(null);
 
     if (!selectedProductId) {
       setErrorMsg('Please select a product.');
@@ -100,8 +97,8 @@ export function LogProduction() {
       } else {
         const newBatch = result.data as Batch;
         setSuccessMsg(`Batch ${newBatch.batch_code} successfully logged in system!`);
-        
-        // Mock print label to Zebra scanner
+
+        // Show printed label preview
         setPrintedLabel({
           code: newBatch.batch_code,
           name: selectedProduct?.name || '',
@@ -133,7 +130,7 @@ export function LogProduction() {
     <div className="mx-auto max-w-4xl p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">Log Production Batch</h1>
-        <p className="text-sm text-slate-500">Record fresh production runs and generate warehouse-receiving barcode labels.</p>
+        <p className="text-sm text-slate-500">Record fresh production runs destined for warehouse inbound.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -247,9 +244,16 @@ export function LogProduction() {
               </div>
             )}
 
-            {successMsg && (
+{successMsg && (
               <div className="rounded-xl bg-green-50 p-4 text-sm text-green-700 font-medium">
                 {successMsg}
+              </div>
+            )}
+
+            {errorMsg && (
+              <div className="flex gap-2 rounded-xl bg-red-50 p-4 text-sm text-red-700">
+                <AlertCircle className="h-5 w-5 shrink-0" />
+                <span>{errorMsg}</span>
               </div>
             )}
 
@@ -268,12 +272,12 @@ export function LogProduction() {
           </form>
         </div>
 
-        {/* Barcode / Print Simulation Preview */}
+        {/* Batch Label Preview */}
         <div className="rounded-2xl bg-slate-900 text-white p-6 shadow-md flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4 text-brand-400">
               <Printer className="h-5 w-5" />
-              <h2 className="text-sm font-bold uppercase tracking-wider">Zebra Printer Preview</h2>
+              <h2 className="text-sm font-bold uppercase tracking-wider">Batch Label Preview</h2>
             </div>
             
             {printedLabel ? (

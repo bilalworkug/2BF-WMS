@@ -132,6 +132,15 @@ export type AuditLog = {
   created_at: string;
 };
 
+export type Box = {
+  barcode: string;
+  batch_id: string;
+  product_id: string;
+  status: 'in_stock' | 'picked' | 'dispatched' | 'damaged';
+  order_id: string | null;
+  created_at: string;
+};
+
 // ---- Helpers ----
 
 type Filter = {
@@ -227,17 +236,17 @@ class LocalQuery<T extends Record<string, unknown>> {
     return this;
   }
 
-  single(): Promise<{ data: T | null; error: null }> {
+  single(): Promise<{ data: T | null; error: { message: string } | null }> {
     return this._execute().then((res) => ({
       data: (res.data as T[] | null)?.[0] ?? null,
-      error: null,
+      error: res.error,
     }));
   }
 
-  maybeSingle(): Promise<{ data: T | null; error: null }> {
+  maybeSingle(): Promise<{ data: T | null; error: { message: string } | null }> {
     return this._execute().then((res) => ({
       data: (res.data as T[] | null)?.[0] ?? null,
-      error: null,
+      error: res.error,
     }));
   }
 
@@ -247,12 +256,12 @@ class LocalQuery<T extends Record<string, unknown>> {
   }
 
   then<TResult>(
-    resolve: (value: { data: T[] | null; error: null; count?: number }) => TResult
+    resolve: (value: { data: T[] | null; error: { message: string } | null; count?: number }) => TResult
   ): Promise<TResult> {
     return this._execute().then(resolve as any);
   }
 
-  private async _execute(): Promise<{ data: T[] | null; error: null; count?: number }> {
+  private async _execute(): Promise<{ data: T[] | null; error: { message: string } | null; count?: number }> {
     try {
       let action = 'select';
       let bodyRow: Partial<T> | undefined;
@@ -297,11 +306,20 @@ class LocalQuery<T extends Record<string, unknown>> {
         body: JSON.stringify(body),
       });
 
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}));
+        return {
+          data: [],
+          error: { message: errorBody?.error?.message || `Server error ${response.status}` },
+          count: 0
+        };
+      }
+
       const result = await response.json();
       return result;
     } catch (err) {
       console.error(`LocalQuery error [${this._table}]:`, err);
-      return { data: [], error: null, count: 0 };
+      return { data: [], error: { message: err instanceof Error ? err.message : 'Request failed' }, count: 0 };
     }
   }
 }

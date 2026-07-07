@@ -11,10 +11,13 @@ import { DiscrepanciesPage } from './pages/DiscrepanciesPage';
 import { PickingPage } from './pages/PickingPage';
 import { DamageReportsPage } from './pages/DamageReportsPage';
 import { QualityHoldsPage } from './pages/QualityHoldsPage';
+import { CheckerPage } from './pages/CheckerPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { UsersPage } from './pages/UsersPage';
 import { LoadingState } from './components/ui';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { CustomerProfilePage } from './pages/CustomerProfilePage';
+import { OrderDetailsPage } from './pages/OrderDetailsPage';
 
 const PAGE_TO_HASH: Record<PageKey, string> = {
   dashboard: '#/dashboard',
@@ -29,6 +32,7 @@ const PAGE_TO_HASH: Record<PageKey, string> = {
   reports: '#/reports',
   users: '#/users',
   audit_log: '#/audit-log',
+  checker: '#/checker',
 };
 
 const HASH_TO_PAGE: Record<string, PageKey> = {
@@ -44,13 +48,25 @@ const HASH_TO_PAGE: Record<string, PageKey> = {
   reports: 'reports',
   users: 'users',
   'audit-log': 'audit_log',
+  checker: 'checker',
 };
 
-function readPageFromHash() {
+function readPageFromHash(): { page: PageKey; notFound: boolean; params?: Record<string, string> } {
   const hash = window.location.hash.replace(/^#\/?/, '');
-  if (!hash) return { page: 'dashboard' as PageKey, notFound: false };
+  if (!hash) return { page: 'dashboard', notFound: false };
+  
+  if (hash.startsWith('customer/')) {
+    const id = hash.replace('customer/', '');
+    return { page: 'customer_profile', notFound: false, params: { id } };
+  }
+  
+  if (hash.startsWith('order/')) {
+    const id = hash.replace('order/', '');
+    return { page: 'order_details', notFound: false, params: { id } };
+  }
+
   const page = HASH_TO_PAGE[hash];
-  return page ? { page, notFound: false } : { page: 'dashboard' as PageKey, notFound: true };
+  return page ? { page, notFound: false } : { page: 'dashboard', notFound: true };
 }
 
 function AuditLogPage() {
@@ -110,12 +126,14 @@ function AppContent() {
   const initialRoute = readPageFromHash();
   const [page, setPage] = useState<PageKey>(initialRoute.page);
   const [notFound, setNotFound] = useState(initialRoute.notFound);
+  const [params, setParams] = useState<Record<string, string> | undefined>(initialRoute.params);
 
   useEffect(() => {
     const onHashChange = () => {
       const route = readPageFromHash();
       setPage(route.page);
       setNotFound(route.notFound);
+      setParams(route.params);
     };
 
     window.addEventListener('hashchange', onHashChange);
@@ -156,6 +174,12 @@ function AppContent() {
     <AppShell current={safePage} onNavigate={navigate}>
       {safePage === 'dashboard'     && <DashboardPage onNavigate={navigate} />}
       {safePage === 'customers'     && <CustomersPage />}
+      {safePage === 'customer_profile' && params?.id && (
+        <CustomerProfilePage customerId={params.id} onBack={() => navigate('customers')} />
+      )}
+      {safePage === 'order_details' && params?.id && (
+        <OrderDetailsPage orderId={params.id} onBack={() => window.history.back()} />
+      )}
       {safePage === 'products'      && <ProductsPage />}
       {safePage === 'batches'       && <LogProduction />}
       {safePage === 'receiving'     && <ReceiveStock />}
@@ -166,6 +190,7 @@ function AppContent() {
       {safePage === 'reports'       && <ReportsPage />}
       {safePage === 'users'         && <UsersPage />}
       {safePage === 'audit_log'     && <AuditLogPage />}
+      {safePage === 'checker'       && <CheckerPage />}
     </AppShell>
   );
 }

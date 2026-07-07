@@ -18,7 +18,7 @@ export function LoginPage() {
     if (error) setError(error);
   };
 
-  const fillCredentials = (role: 'super_admin' | 'production' | 'receiving' | 'withdrawal') => {
+  const fillCredentials = (role: 'super_admin' | 'production' | 'receiving' | 'withdrawal' | 'sales') => {
     if (role === 'super_admin') {
       setEmail('admin@2bfc.local');
       setPassword('admin123');
@@ -28,6 +28,9 @@ export function LoginPage() {
     } else if (role === 'receiving') {
       setEmail('receiving@2bfc.local');
       setPassword('receiving123');
+    } else if (role === 'sales') {
+      setEmail('sales@2bfc.local');
+      setPassword('sales123');
     } else {
       setEmail('withdrawal@2bfc.local');
       setPassword('withdrawal123');
@@ -120,6 +123,13 @@ export function LoginPage() {
                 <Users className="h-5 w-5 text-orange-500" />
                 Withdrawal Clerk
               </button>
+              <button
+                onClick={() => fillCredentials('sales')}
+                className="col-span-2 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-2 py-2.5 text-xs font-medium text-slate-600 transition hover:border-emerald-300 hover:bg-emerald-50"
+              >
+                <Users className="h-5 w-5 text-emerald-500" />
+                Sales Representative
+              </button>
             </div>
           </div>
 
@@ -129,6 +139,7 @@ export function LoginPage() {
             <p>Production: production@2bfc.local / production123</p>
             <p>Receiving: receiving@2bfc.local / receiving123</p>
             <p>Withdrawal: withdrawal@2bfc.local / withdrawal123</p>
+            <p>Sales: sales@2bfc.local / sales123</p>
           </div>
         </div>
 

@@ -18,6 +18,7 @@ import {
   Lock,
   AlertTriangle,
   History,
+  Search,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -37,6 +38,7 @@ const allNavItems: NavItem[] = [
   { key: 'picking', label: 'Order Picking', icon: <ListOrdered className="h-5 w-5" /> },
   { key: 'damage', label: 'Report Damage', icon: <AlertTriangle className="h-5 w-5" /> },
   { key: 'holds', label: 'Quality Holds', icon: <Lock className="h-5 w-5" /> },
+  { key: 'checker', label: 'Checker Terminal', icon: <Search className="h-5 w-5" /> },
   { key: 'reports', label: 'Reports Panel', icon: <BarChart3 className="h-5 w-5" /> },
   { key: 'users', label: 'User Accounts', icon: <UserCog className="h-5 w-5" /> },
   { key: 'audit_log', label: 'Audit Trail', icon: <History className="h-5 w-5" /> },
